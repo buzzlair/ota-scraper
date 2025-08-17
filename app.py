@@ -2,25 +2,30 @@ from flask import Flask, request, jsonify
 from flask_cors import CORS
 import requests
 from bs4 import BeautifulSoup
+import time
+import random
 
 # --- Initialize Flask App ---
 app = Flask(__name__)
 # Enable Cross-Origin Resource Sharing (CORS) to allow your UI to call this server
 CORS(app)
 
-# --- Scraper Functions (from our previous script) ---
+# --- Scraper Functions (with guardrails) ---
 
 def scrape_booking(city):
     """ Scrapes hotel data for a given city from Booking.com. """
     print(f"Scraping Booking.com for {city}...")
     headers = {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+        # A descriptive User-Agent is more ethical and less likely to be blocked.
+        'User-Agent': 'PricingScraper/1.0 (https://ota-scraper-sacn.onrender.com)'
     }
     city_formatted = city.replace(' ', '+')
     url = f'https://www.booking.com/searchresults.html?ss={city_formatted}'
     
     try:
         response = requests.get(url, headers=headers)
+        # --- GUARDRAIL: Add a polite delay after making the request ---
+        time.sleep(random.uniform(1, 3))
         response.raise_for_status()
     except requests.exceptions.RequestException as e:
         print(f"Error making request to Booking.com: {e}")
@@ -43,13 +48,15 @@ def scrape_airbnb(city):
     """ Scrapes listing data for a given city from Airbnb. """
     print(f"Scraping Airbnb for {city}...")
     headers = {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+        'User-Agent': 'PricingScraper/1.0 (https://ota-scraper-sacn.onrender.com)'
     }
     city_formatted = city.replace(' ', '-')
     url = f'https://www.airbnb.com/s/{city_formatted}/homes'
     
     try:
         response = requests.get(url, headers=headers)
+        # --- GUARDRAIL: Add a polite delay after making the request ---
+        time.sleep(random.uniform(1, 3))
         response.raise_for_status()
     except requests.exceptions.RequestException as e:
         print(f"Error making request to Airbnb: {e}")
